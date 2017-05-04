@@ -1,0 +1,3 @@
+# Dotex
+
+Generate graphviz graphs
