@@ -1,5 +1,11 @@
+dist: trusty
+sudo: required
 language: elixir
 elixir:
   - 1.4.2
 otp_release:
   - 19.3
+addons:
+  apt:
+    packages:
+    - graphviz

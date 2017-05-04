@@ -3,6 +3,22 @@ defmodule Dotex do
     "digraph {\n" <> generate_nodes(Enum.reverse(graph.nodes)) <> generate_connections(Enum.reverse(graph.connections)) <> "}\n"
   end
 
+  def write_graph(graph, fileformat, filename) do
+    graph_string = graph(graph)
+
+    {:ok, tmp_path} = Temp.path(%{suffix: ".dot"})
+
+    :ok = File.write(tmp_path, graph_string)
+
+    {output, result} = System.cmd("dot", [tmp_path, "-T#{fileformat}", "-o#{filename}"])
+
+    cond do
+      result == 0 -> :ok
+      true ->
+        {:error, output}
+    end
+  end
+
   defp generate_connections([]), do: ""
   defp generate_connections([{src, dst, params}|t]) when is_list(dst) do
     dstnames = dst
