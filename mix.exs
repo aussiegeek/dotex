@@ -15,6 +15,8 @@ defmodule Dotex.Mixfile do
   end
 
   defp deps do
-    []
+    [
+      {:temp, "~> 0.4"},
+    ]
   end
 end
