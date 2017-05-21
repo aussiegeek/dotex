@@ -2,9 +2,9 @@ defmodule DotexTest do
   use ExUnit.Case
 
   test "simple digraph" do
-    a = Dotex.Node.new('A')
-    b = Dotex.Node.new('B')
-    c = Dotex.Node.new('C')
+    a = Dotex.Node.new("A")
+    b = Dotex.Node.new("B")
+    c = Dotex.Node.new("C")
 
     graph =
       Dotex.Graph.new
@@ -13,16 +13,16 @@ defmodule DotexTest do
       |> Dotex.graph
 
     assert graph == ~s(digraph {
-  A -> B;
-  B -> C, A;
+  "A" -> "B";
+  "B" -> "C", "A";
 }
 )
   end
 
   test "digraph with attributes" do
-    a = Dotex.Node.new('A', %{shape: "box"})
-    b = Dotex.Node.new('B')
-    c = Dotex.Node.new('C', %{style: "filled", fillcolor: "blue"})
+    a = Dotex.Node.new("A", %{shape: "box"})
+    b = Dotex.Node.new(~s{Node "B"})
+    c = Dotex.Node.new("C", %{style: "filled", fillcolor: "blue"})
 
     graph =
       Dotex.Graph.new
@@ -34,20 +34,20 @@ defmodule DotexTest do
       |> Dotex.Graph.add_connection(b, [c,a], %{label: "connections", arrowhead: "dot"})
       |> Dotex.graph
 
-    assert graph == ~s(digraph {
-  A [shape="box"];
-  C [style="filled",fillcolor="blue"];
-  A -> B;
-  C -> A [label="label"];
-  B -> C, A [label="connections",arrowhead="dot"];
+    assert graph == ~S(digraph {
+  "A" [shape="box"];
+  "C" [style="filled",fillcolor="blue"];
+  "A" -> "Node \"B\"";
+  "C" -> "A" [label="label"];
+  "Node \"B\"" -> "C", "A" [label="connections",arrowhead="dot"];
 }
 )
   end
 
   test "write graph to file" do
-    a = Dotex.Node.new('A')
-    b = Dotex.Node.new('B')
-    c = Dotex.Node.new('C')
+    a = Dotex.Node.new("A")
+    b = Dotex.Node.new("B")
+    c = Dotex.Node.new("C")
 
     :ok = Dotex.Graph.new
     |> Dotex.Graph.add_connection(a, b)
