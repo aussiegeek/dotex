@@ -1,6 +1,6 @@
 defmodule Dotex do
   def graph(graph) do
-    "digraph {\n" <> generate_nodes(Enum.reverse(graph.nodes)) <> generate_connections(Enum.reverse(graph.connections)) <> "}\n"
+    "#{graph.type}#{graph_id(graph.id)} {\n" <> generate_attributes(graph.attributes) <> generate_nodes(Enum.reverse(graph.nodes)) <> generate_connections(graph, Enum.reverse(graph.connections)) <> "}\n"
   end
 
   def write_graph(graph, fileformat, filename) do
@@ -19,17 +19,20 @@ defmodule Dotex do
     end
   end
 
-  defp generate_connections([]), do: ""
-  defp generate_connections([{src, dst, params}|t]) when is_list(dst) do
+  defp generate_connections(graph, []), do: ""
+  defp generate_connections(graph, [{src, dst, params}|t]) when is_list(dst) do
     dstnames = dst
     |> Enum.map(fn (d) -> escape_name(d.name) end)
     |> Enum.join(", ")
 
-    ~s(  #{escape_name(src.name)} -> #{dstnames}#{generate_params(params)};\n) <> generate_connections(t)
+    ~s(  #{escape_name(src.name)} #{connector(graph)} #{dstnames}#{generate_params(params)};\n) <> generate_connections(graph, t)
   end
-  defp generate_connections([{src, dst, params}|t]) do
-    ~s(  #{escape_name(src.name)} -> #{escape_name(dst.name)}#{generate_params(params)};\n)  <> generate_connections(t)
+  defp generate_connections(graph, [{src, dst, params}|t]) do
+    ~s(  #{escape_name(src.name)} #{connector(graph)} #{escape_name(dst.name)}#{generate_params(params)};\n)  <> generate_connections(graph, t)
   end
+
+  defp connector(%{type: "digraph"}), do: "->"
+  defp connector(%{type: "graph"}), do: "--"
 
   defp generate_nodes([]), do: ""
   defp generate_nodes([%{params: params}|t]) when params == %{} do
@@ -43,11 +46,20 @@ defmodule Dotex do
   defp generate_params(params) do
     param_string =
       params
-      |> Enum.reverse
       |> Enum.map(fn({k,v}) -> ~s(#{k}="#{v}") end)
     |> Enum.join(",")
     " [#{param_string}]"
   end
 
-  defp escape_name(name) when is_binary(name), do: ~s("#{String.replace(name, ~s{"}, ~s(\\"))}")
+  defp generate_attributes([]), do: ""
+  defp generate_attributes(attributes) do
+    joined = attributes
+    |> Enum.map(fn({k,v}) -> ~s(#{k}="#{v}") end)
+    |> Enum.join(" ")
+    "  " <> joined <> ";\n"
+  end
+
+  defp graph_id(nil), do: nil
+  defp graph_id(name), do: " #{name}"
+  defp escape_name(name) when is_binary(name), do: ~s["#{String.replace(name, ~s{"}, ~s(\\"))}"]
 end
