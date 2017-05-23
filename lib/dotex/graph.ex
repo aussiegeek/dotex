@@ -1,9 +1,8 @@
 defmodule Dotex.Graph do
-  defstruct connections: [], nodes: []
+  defstruct connections: [], nodes: [], type: "digraph", id: nil, attributes: []
 
-  def new do
-    %Dotex.Graph{}
-  end
+  def new, do: %Dotex.Graph{}
+  def new(params), do: struct(Dotex.Graph, params)
 
   def add_connection(graph = %Dotex.Graph{}, srcnode = %Dotex.Node{}, dstnode, params \\ %{}) do
     connections = [{srcnode, dstnode, params}|graph.connections]
