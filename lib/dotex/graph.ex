@@ -1,4 +1,8 @@
 defmodule Dotex.Graph do
+  @moduledoc """
+  The base struct for storing the attributes, nodes and connections of a Graphviz graph
+  """
+
   defstruct connections: [], nodes: [], type: "digraph", id: nil, attributes: []
 
   def new, do: %Dotex.Graph{}

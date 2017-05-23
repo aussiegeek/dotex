@@ -17,6 +17,7 @@ defmodule Dotex.Mixfile do
   defp deps do
     [
       {:temp, "~> 0.4"},
+      {:credo, "~> 0.7", only: [:dev, :test]},
     ]
   end
 end

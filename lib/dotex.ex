@@ -1,6 +1,14 @@
 defmodule Dotex do
+  @moduledoc """
+  Dotex is an elixir library that generates Graphviz files
+  """
+
   def graph(graph) do
-    "#{graph.type}#{graph_id(graph.id)} {\n" <> generate_attributes(graph.attributes) <> generate_nodes(Enum.reverse(graph.nodes)) <> generate_connections(graph, Enum.reverse(graph.connections)) <> "}\n"
+    "#{graph.type}#{graph_id(graph.id)} {\n" <>
+      generate_attributes(graph.attributes) <>
+      generate_nodes(Enum.reverse(graph.nodes)) <>
+      generate_connections(graph, Enum.reverse(graph.connections)) <>
+      "}\n"
   end
 
   def write_graph(graph, fileformat, filename) do
@@ -12,11 +20,7 @@ defmodule Dotex do
 
     {output, result} = System.cmd("dot", [tmp_path, "-T#{fileformat}", "-o#{filename}"])
 
-    cond do
-      result == 0 -> :ok
-      true ->
-        {:error, output}
-    end
+    if result == 0, do: :ok, else: {:error, output}
   end
 
   defp generate_connections(_graph, []), do: ""
@@ -25,10 +29,18 @@ defmodule Dotex do
     |> Enum.map(fn (d) -> escape_name(d.name) end)
     |> Enum.join(", ")
 
-    ~s(  #{escape_name(src.name)} #{connector(graph)} #{dstnames}#{generate_params(params)};\n) <> generate_connections(graph, t)
+    ~s(  #{escape_name(src.name)} #{connector(graph)} ) <>
+      dstnames <>
+      generate_params(params) <>
+      ";\n" <>
+      generate_connections(graph, t)
   end
   defp generate_connections(graph, [{src, dst, params}|t]) do
-    ~s(  #{escape_name(src.name)} #{connector(graph)} #{escape_name(dst.name)}#{generate_params(params)};\n)  <> generate_connections(graph, t)
+    ~s(  #{escape_name(src.name)} #{connector(graph)} ) <>
+      escape_name(dst.name) <>
+      generate_params(params) <>
+      ";\n" <>
+      generate_connections(graph, t)
   end
 
   defp connector(%{type: "digraph"}), do: "->"
@@ -46,7 +58,7 @@ defmodule Dotex do
   defp generate_params(params) do
     param_string =
       params
-      |> Enum.map(fn({k,v}) -> ~s(#{k}="#{v}") end)
+      |> Enum.map(fn({k, v}) -> ~s(#{k}="#{v}") end)
     |> Enum.join(",")
     " [#{param_string}]"
   end
@@ -54,7 +66,7 @@ defmodule Dotex do
   defp generate_attributes([]), do: ""
   defp generate_attributes(attributes) do
     joined = attributes
-    |> Enum.map(fn({k,v}) -> ~s(#{k}="#{v}") end)
+    |> Enum.map(fn({k, v}) -> ~s(#{k}="#{v}") end)
     |> Enum.join(" ")
     "  " <> joined <> ";\n"
   end
