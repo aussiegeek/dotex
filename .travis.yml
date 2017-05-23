@@ -9,3 +9,7 @@ addons:
   apt:
     packages:
     - graphviz
+
+script:
+  - MIX_ENV=test mix compile --warnings-as-errors
+  - mix test

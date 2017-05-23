@@ -19,7 +19,7 @@ defmodule Dotex do
     end
   end
 
-  defp generate_connections(graph, []), do: ""
+  defp generate_connections(_graph, []), do: ""
   defp generate_connections(graph, [{src, dst, params}|t]) when is_list(dst) do
     dstnames = dst
     |> Enum.map(fn (d) -> escape_name(d.name) end)
