@@ -17,6 +17,9 @@ defmodule Dotex.Mixfile do
   defp deps do
     [
       {:temp, "~> 0.4"},
+      {:credo, "~> 0.7", only: [:dev, :test]},
+      {:ex_doc, "~> 0.14", only: :docs, runtime: false, optional: true},
+      {:inch_ex, ">= 0.0.0", only: :docs, optional: true},
     ]
   end
 end

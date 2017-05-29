@@ -8,7 +8,7 @@ defmodule DotexTest do
     b = Dotex.Node.new("B")
     c = Dotex.Node.new("C")
 
-    graph = Graph.new
+    graph = Graph.new(type: "digraph")
     |> Graph.add_connection(a, b)
     |> Graph.add_connection(b, [c,a])
     |> Dotex.graph
@@ -21,25 +21,25 @@ defmodule DotexTest do
   end
 
   test "digraph with attributes" do
-    a = Node.new("A", %{shape: "box"})
+    a = Node.new("A", [shape: "box"])
     b = Node.new(~s{Node "B"})
-    c = Node.new("C", %{style: "filled", fillcolor: "blue"})
+    c = Node.new("C", [style: "filled", fillcolor: "blue"])
 
-    graph = Graph.new
+    graph = Graph.new(type: "digraph")
       |> Graph.add_node(a)
       |> Graph.add_node(b)
       |> Graph.add_node(c)
       |> Graph.add_connection(a, b)
-      |> Graph.add_connection(c, a, %{label: "label"})
-      |> Dotex.Graph.add_connection(b, [c,a], %{label: "connections", arrowhead: "dot"})
+      |> Graph.add_connection(c, a, [label: "label"])
+      |> Dotex.Graph.add_connection(b, [c,a], [label: "connections", arrowhead: "dot"])
       |> Dotex.graph
 
     assert graph == ~S(digraph {
   "A" [shape="box"];
-  "C" [fillcolor="blue",style="filled"];
+  "C" [style="filled",fillcolor="blue"];
   "A" -> "Node \"B\"";
   "C" -> "A" [label="label"];
-  "Node \"B\"" -> "C", "A" [arrowhead="dot",label="connections"];
+  "Node \"B\"" -> "C", "A" [label="connections",arrowhead="dot"];
 }
 )
   end
@@ -49,7 +49,7 @@ defmodule DotexTest do
     b = Node.new("B")
     c = Node.new("C")
 
-    :ok = Dotex.Graph.new
+    :ok = Dotex.Graph.new(type: "digraph")
     |> Graph.add_connection(a, b)
     |> Graph.add_connection(b, [c,a])
     |> Dotex.write_graph(:dot, "/tmp/dotex.dot")
